@@ -101,6 +101,16 @@ const hostPage3 = (req, res) => {
   res.render('page3');
 };
 
+const hostPage4 = async (req, res) => {
+  try {
+    const docs = await Dog.find({}).lean().exec();
+    return res.render('page4', { dogs: docs });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'failed to find cats' });
+  }
+};
+
 // Get name will return the name of the last added cat.
 const getName = async (req, res) => {
   try {
@@ -277,6 +287,81 @@ const updateLast = (req, res) => {
   });
 };
 
+// DOG FUNCS
+// add new dog to db
+const createDog = async (req, res) => {
+  // error handling - not all data sent, obj not created
+  if (!req.body.name || !req.body.breed || !req.body.age) {
+    return res.status(400).json({ error: 'All fields required' });
+  }
+
+  // if all info present, set obj data + create
+  const dogData = {
+    name: `${req.body.name}`,
+    breed: `${req.body.breed}`,
+    age: `${req.body.age}`,
+  };
+
+  const newDog = new Dog(dogData);
+
+  try {
+    await newDog.save();
+    return res.status(201).json({
+      name: newDog.name,
+      breed: newDog.breed,
+      age: newDog.age,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'failed to create dog' }); // throw server error
+  }
+};
+
+// find dog based on user input, increase it's age by one
+// FROM searchName and updateLast
+const increaseFoundDog = (req, res) => {
+  const updatePromise = Dog.findOneAndUpdate({ name: req.query.searchName }, { $inc: { age: 1 } }, {
+    returnDocument: 'after', // uses updated vers of db, not original
+  }).exec();
+
+  updatePromise.then((doc) => res.json({
+    name: doc.searchName,
+    breed: doc.breed,
+    age: doc.age,
+  }));
+
+  updatePromise.catch((err) => {
+    console.log(err);
+    return res.status(500).json({ error: 'Something went wrong' });
+  });
+  //     returnDocument: 'after', // uses updated vers of db, not original
+  //   }).exec();
+  // console.log(req.query);
+  // // error handling - errors out if user doesn't input name
+  // if (!req.query.searchName) {
+  //   return res.status(400).json({ error: 'Name is required to search!' });
+  // }
+
+  // let doc;
+  // // try to find dog based on user input
+  // try {
+  //   doc = await Dog.findOneAndUpdate({ name: req.query.searchName }, { $inc: { age: 1 } }, {
+  //     returnDocument: 'after', // uses updated vers of db, not original
+  //   }).exec();
+  // } catch (err) {
+  //   console.log(err);
+  //   return res.status(500).json({ error: 'Something went wrong' });
+  // }
+
+  // // if dog doesn't exist, return error
+  // if (!doc) {
+  //   return res.status(404).json({ error: 'No dogs found' });
+  // }
+
+  // // if successful, return result w/ updated age
+  // return doc;
+};
+
 // A function to send back the 404 page.
 const notFound = (req, res) => {
   res.status(404).render('notFound', {
@@ -290,9 +375,12 @@ module.exports = {
   page1: hostPage1,
   page2: hostPage2,
   page3: hostPage3,
+  page4: hostPage4,
   getName,
   setName,
   updateLast,
   searchName,
+  createDog,
+  increaseFoundDog,
   notFound,
 };

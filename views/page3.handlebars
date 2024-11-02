@@ -14,6 +14,7 @@
   <a href="/">Home</a>
   <a href="/page1">Page 1</a>
   <a href="/page2">Page 2</a>
+  <a href="/page4">Page 4</a>
 
   <!-- formatted differently than page 2 to make it look nicer-->
   <form action="/createDog" method="POST">
@@ -30,9 +31,9 @@
   <br/>
   <br/>
   
-  <form action="/findIncreaseDog" method="POST">
+  <form action="/increaseFoundDog" method="GET">
     <label for="name">Dog's name to increase:</label>
-    <input type="text" name="name" value="">
+    <input type="text" name="searchName" value="">
     <input type="submit" value="Submit">
   </form>
 </body>
