@@ -6,7 +6,7 @@
   "scripts": {
     "nodemon": "nodemon --watch ./server ./server/app.js",
     "start": "node ./server/app.js",
-    "pretest": "eslint ./server --fix",
+    "pretest": "eslint ./server ./server/models --fix",
     "test": "echo \"tests complete\""
   },
   "author": "Cody Van De Mark / Austin Willoughby",
