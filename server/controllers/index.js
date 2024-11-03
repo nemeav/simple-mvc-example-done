@@ -287,7 +287,7 @@ const updateLast = (req, res) => {
   });
 };
 
-// DOG FUNCS
+// DOG FUNC
 // add new dog to db
 const createDog = async (req, res) => {
   // error handling - not all data sent, obj not created
