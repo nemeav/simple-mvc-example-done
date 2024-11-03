@@ -324,42 +324,24 @@ const increaseFoundDog = (req, res) => {
     returnDocument: 'after', // uses updated vers of db, not original
   }).exec();
 
-  updatePromise.then((doc) => res.json({
-    name: doc.searchName,
-    breed: doc.breed,
-    age: doc.age,
-  }));
+  console.log(updatePromise);
+
+  updatePromise.then((doc) => {
+    if (!doc) {
+      return res.status(404).json({ error: 'No dog found' });
+    }
+
+    return res.status(200).json({
+      name: doc.name,
+      breed: doc.breed,
+      age: doc.age,
+    });
+  });
 
   updatePromise.catch((err) => {
     console.log(err);
     return res.status(500).json({ error: 'Something went wrong' });
   });
-  //     returnDocument: 'after', // uses updated vers of db, not original
-  //   }).exec();
-  // console.log(req.query);
-  // // error handling - errors out if user doesn't input name
-  // if (!req.query.searchName) {
-  //   return res.status(400).json({ error: 'Name is required to search!' });
-  // }
-
-  // let doc;
-  // // try to find dog based on user input
-  // try {
-  //   doc = await Dog.findOneAndUpdate({ name: req.query.searchName }, { $inc: { age: 1 } }, {
-  //     returnDocument: 'after', // uses updated vers of db, not original
-  //   }).exec();
-  // } catch (err) {
-  //   console.log(err);
-  //   return res.status(500).json({ error: 'Something went wrong' });
-  // }
-
-  // // if dog doesn't exist, return error
-  // if (!doc) {
-  //   return res.status(404).json({ error: 'No dogs found' });
-  // }
-
-  // // if successful, return result w/ updated age
-  // return doc;
 };
 
 // A function to send back the 404 page.
